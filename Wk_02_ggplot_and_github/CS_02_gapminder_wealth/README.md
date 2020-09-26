@@ -13,4 +13,6 @@ ggplot(data = gapminder2) +
   scale_y_continuous(trans = "sqrt") +
   facet_wrap(~ year, nrow = 1) +
   labs(x = "Life Expectancy", y = "GDP per capita", size = "Population (100k)")
+  
+ggsave()
 ```
