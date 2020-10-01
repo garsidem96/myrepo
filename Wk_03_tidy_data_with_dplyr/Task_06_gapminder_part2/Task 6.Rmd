@@ -1,3 +1,8 @@
+---
+title: "Task 6"
+output: html_document
+---
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
@@ -29,4 +34,4 @@ ggplot(data = gapminder2) +
   facet_wrap(~ continent, nrow = 1) +
   labs(x = "Year", y = "GDP per capita", size = "Population (100k)") +
   theme_bw()
-``` 
+```
