@@ -1,0 +1,93 @@
+---
+title: "Case Study 3"
+output: 
+   html_document:
+     keep_md: true
+---
+
+# Question 1:
+If I am leaving before noon, which two airlines do you recommend at each airport (JFK, LGA, EWR) that will have the lowest delay time at the 75th percentile?
+
+```{r, echo = FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(nycflights13)
+library(pander)
+```
+
+```{r, echo = FALSE, message=FALSE, warning=FALSE}
+flights2 <- select(flights, c(dep_time, sched_dep_time, dep_delay, arr_time, sched_arr_time, arr_delay, carrier, origin))
+
+flights2 <- filter(flights2, sched_dep_time < 1200)
+
+flightsewr <- filter(flights2, origin == "EWR")
+flightslga <- filter(flights2, origin == "LGA" & carrier != "OO")
+flightsjfk <- filter(flights2, origin == "JFK")
+
+#View(flightsewr)
+```
+
+```{r, echo = FALSE, message=FALSE, warning=FALSE}
+ggplot(flightsewr, aes(x = carrier, y = dep_delay, fill = carrier)) +
+  geom_boxplot() +
+  scale_y_continuous(limits = c(0, 100)) +
+  labs(title = "AS and WN are Best Airlines for EWR Departure at 75th Percentile", x = "Airline", y = "Departure Delay (In Minutes)") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  scale_fill_manual(values = c("AS" = "lightblue", "WN" = "lightblue", "9E" = "snow", "AA" = "snow", "B6" = "snow", "DL" = "snow", "EV" = "snow","MQ" = "snow", "UA" = "snow", "US" = "snow", "VX" = "snow"))
+```
+
+Note: The "OO" airline was removed from the data because of the extremely small sample size.
+```{r, echo = FALSE, message=FALSE, warning=FALSE}
+ggplot(flightslga, aes(x = carrier, y = dep_delay, fill = carrier)) +
+  geom_boxplot() +
+  scale_y_continuous(limits = c(0, 100)) +
+  labs(title = "F9 and WN are Best Airlines for LGA Departure at 75th Percentile", x = "Airline", y = "Departure Delay (In Minutes)") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  scale_fill_manual(values = c("9E" = "snow", "AA" = "snow", "B6" = "snow", "DL" = "snow", "EV" = "snow", "F9" = "lightgreen", "FL" = "snow", "MQ" = "snow", "UA" = "snow", "US" = "snow", "WN" = "lightgreen", "YV" = "snow"))
+```
+
+```{r, echo = FALSE, message=FALSE, warning=FALSE}
+ggplot(flightsjfk, aes(x = carrier, y = dep_delay, fill = carrier)) +
+  geom_boxplot() +
+  scale_y_continuous(limits = c(0, 100)) +
+  labs(title = "HA and VX are Best Airlines for JFK Departure at 75th Percentile", x = "Airline", y = "Departure Delay (In Minutes)") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  scale_fill_manual(values = c("9E" = "snow", "AA" = "snow", "B6" = "snow", "DL" = "snow", "EV" = "snow","MQ" = "snow", "UA" = "snow", "US" = "snow", "VX" = "lightgoldenrod", "HA" = "lightgoldenrod"))
+```
+
+Results are as follows: If I want to leave from EWR, the best airlines at the 75th percentile are AS and WN. For LGA, the best are F9 and WN. For JFK, the best are HA and VX.
+
+# Question 2:
+Which origin airport has the lowest probability of a late arrival when I am using Delta Airlines?
+
+```{r, echo = FALSE, message=FALSE, warning=FALSE}
+flightsdelta <- select(flights, c(dep_time, sched_dep_time, dep_delay, arr_time, sched_arr_time, arr_delay, carrier, origin))
+flightsdelta <- filter(flightsdelta, carrier == "DL")
+
+deltaewr <- filter(flightsdelta, origin == "EWR")
+
+deltalga <- filter(flightsdelta, origin == "LGA")
+
+deltajfk <- filter(flightsdelta, origin == "JFK")
+```
+### Origin: EWR
+```{r, echo = FALSE, message=FALSE, warning=FALSE}
+count(deltaewr, arr_delay > 0) %>%
+  pander()
+```
+Here we have EWR, with 2,570 out of the 4,295 total flights arriving on time, giving us a 59.8% success rate.
+
+### Origin: LGA
+```{r, echo = FALSE, message=FALSE, warning=FALSE}
+count(deltalga, arr_delay > 0) %>%
+  pander()
+```
+Here we have LGA, with 14,469 out of the 22,804 total flights arriving on time, giving us a 63.4% success rate.
+
+### Origin: JFK
+```{r, echo = FALSE, message=FALSE, warning=FALSE}
+count(deltajfk, arr_delay > 0) %>%
+  pander()
+```
+Here we have JFK, with 14,206 out of the 20,559 total flights arriving on time, giving us a 69.1% success rate.
+
+As the data shows, the airport that has the highest chance of arriving on time when using Delta Airlines is JFK, with 69.1 % of flights arriving on time or early.
